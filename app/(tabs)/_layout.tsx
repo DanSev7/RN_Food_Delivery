@@ -1,7 +1,5 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { Slot } from 'expo-router'
-import { Redirect } from 'expo-router';
+import { Redirect, Slot } from 'expo-router';
+import React from 'react';
 
 const _layout = () => {
   const isAuthenticated = false;
