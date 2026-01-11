@@ -1,6 +1,13 @@
-# Welcome to your Expo app 👋
+# 🍔 Food Ordering System
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A fully functional **Food Ordering Mobile Application** built using **React Native** and modern backend & state management tools.
+
+---
+
+## 📱 Project Idea
+
+The **Food Ordering System** is a mobile application that allows users to browse food items, place orders, and manage their food purchases seamlessly.  
+The app is designed to provide a smooth, fast, and user-friendly experience for both customers and service providers.
 
 ---
 
@@ -34,9 +41,9 @@ This project uses **file-based routing**.
 
 - ⚛️ **React Native** – Cross-platform mobile application framework  
 - 📦 **Expo** – Tooling and platform for building React Native apps  
-- 🔐 **Appwrite** – Backend-as-a-Service for authentication and data  
-- 🧠 **Zustand** – Simple and scalable state management  
-- 🚀 **Antigravity IDE** – Modern IDE for efficient development  
+- 🔐 **Appwrite** – Backend-as-a-Service for authentication and data management  
+- 🧠 **Zustand** – Lightweight and scalable state management  
+- 🚀 **Antigravity IDE** – Modern IDE for efficient development workflow  
 
 ---
 
@@ -64,4 +71,4 @@ This command moves the starter code to **app-example** and creates a fresh **app
 
 ---
 
-© 2026. All rights reserved.
+© 2026 Food Ordering System. All rights reserved.
