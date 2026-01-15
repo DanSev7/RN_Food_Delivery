@@ -8,6 +8,8 @@ import CartButton from '@/components/CartButton'
 import cn from 'clsx';
 import MenuCard from '@/components/MenuCard'
 import { MenuItem } from '@/type'
+import SearchBar from '@/components/SearchBar'
+import Filter from '@/components/Filter'
 
 const search = () => {
   const {category, query} = useLocalSearchParams<{query: string; category: string}>();
@@ -19,8 +21,8 @@ const search = () => {
     refetch({category, query, limit: 6});
   }, [category, query]);
 
-  console.log("Data : ", data);
-  console.log("Categories : ", categories); 
+  // console.log("Data : ", data);
+  // console.log("Categories : ", categories); 
 
   return (
     <SafeAreaView className='bg-white h-full'>
@@ -50,8 +52,8 @@ const search = () => {
               </View>
               <CartButton />
             </View>
-            <Text>Search Input</Text>
-            <Text>Filter</Text>
+            <SearchBar />
+            <Filter categories={categories!} />
           </View>
         )}
         ListEmptyComponent={() => (!loading &&

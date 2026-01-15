@@ -132,7 +132,7 @@ export const getMenu = async ({category, query}: GetMenuParams
         const queries: string[] = [];
 
         if(category) {
-            queries.push(Query.equal('categoryies', category));
+            queries.push(Query.equal('categories', category));
         }
 
         if(query) {
