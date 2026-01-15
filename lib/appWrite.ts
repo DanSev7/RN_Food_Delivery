@@ -6,6 +6,12 @@ const PROJECT_ID = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID;
 const PLATFORM = process.env.EXPO_PUBLIC_APPWRITE_PLATFORM;
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID;
 const USER_COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_USER_COLLECTION_ID;
+const CATEGORY_COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_CATEGORY_COLLECTION_ID;
+const MENU_COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_MENU_COLLECTION_ID;
+const CUSTOMIZATION_COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_CUSTOMIZATION_COLLECTION_ID;
+const MENU_CUSTOMIZATION_COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_MENU_CUSTOMIZATION_COLLECTION_ID;
+const BUCKET_ID = process.env.EXPO_PUBLIC_APPWRITE_BUCKET_ID;
+// const PRODUCT_COLLECTION_ID = process.env.EXPO_PUBLIC_APPWRITE_PRODUCT_COLLECTION_ID;
 
 export const appwriteConfig = {
     endpoint: ENDPOINT_ID!,
@@ -13,6 +19,11 @@ export const appwriteConfig = {
     platform: PLATFORM!,
     databaseId: DATABASE_ID!,
     userCollectionId: USER_COLLECTION_ID!,
+    categoryCollectionId: CATEGORY_COLLECTION_ID!,
+    menuCollectionId: MENU_COLLECTION_ID!,
+    customizationCollectionId: CUSTOMIZATION_COLLECTION_ID!,
+    menuCustomizationCollectionId: MENU_CUSTOMIZATION_COLLECTION_ID!,
+    bucketId: BUCKET_ID!,
 }
 
 export const client = new Client();
@@ -62,12 +73,23 @@ export const createUser = async ({email, password, name}: CreateUserPrams) => {
 
 export const signIn = async ({ email, password }: SignInParams) => {
     try {
+        // Check if there's an existing session and delete it
+        try {
+            const currentSession = await account.getSession('current');
+            if (currentSession) {
+                await account.deleteSession('current');
+            }
+        } catch (error) {
+            // No active session, continue with sign in
+        }
+        
         const session = await account.createEmailPasswordSession(email, password);
-        // return session;
+        return session;
     } catch (error) {
         throw new Error (error as string);
     }
 }
+
 
 export const getCurrentUser = async () => {
     try {
@@ -84,8 +106,13 @@ export const getCurrentUser = async () => {
         if(!currentUser) throw new Error('User not found');
         
         return currentUser.documents[0];
-    } catch (error) {
-        console.log(error);
-        throw new Error(error as string);
+    } catch (error: any) {
+        // If there's no active session (guest user), return null instead of throwing
+        if (error.code === 401 || error.message?.includes('missing scopes')) {
+            console.log('No active session - user is a guest');
+            return null;
+        }
+        console.log('Error fetching user:', error);
+        return null;
     }
 }
