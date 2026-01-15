@@ -1,50 +1,74 @@
-# Welcome to your Expo app 👋
+# 🍔 Food Ordering System
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A fully functional **Food Ordering Mobile Application** built using **React Native** and modern backend & state management tools.
 
-## Get started
+---
 
-1. Install dependencies
+## 📱 Project Idea
 
-   ```bash
-   npm install
-   ```
+The **Food Ordering System** is a mobile application that allows users to browse food items, place orders, and manage their food purchases seamlessly.  
+The app is designed to provide a smooth, fast, and user-friendly experience for both customers and service providers.
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🚀 Get Started
 
-In the output, you'll find options to open the app in a
+### 1. Install Dependencies
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+```bash
+npm install
+```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 2. Start the App
 
-## Get a fresh project
+```bash
+npx expo start
+```
 
-When you're ready, run:
+You can open the app using:
+
+- Development build  
+- Android Emulator  
+- iOS Simulator  
+- Expo Go  
+
+You can start developing by editing files inside the **app** directory.  
+This project uses **file-based routing**.
+
+---
+
+## 🛠️ Tools Used
+
+- ⚛️ **React Native** – Cross-platform mobile application framework  
+- 📦 **Expo** – Tooling and platform for building React Native apps  
+- 🔐 **Appwrite** – Backend-as-a-Service for authentication and data management  
+- 🧠 **Zustand** – Lightweight and scalable state management  
+- 🚀 **Antigravity IDE** – Modern IDE for efficient development workflow  
+
+---
+
+## 🔄 Reset Project
 
 ```bash
 npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+This command moves the starter code to **app-example** and creates a fresh **app** directory.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## 📚 Learn More
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- Expo Documentation: https://docs.expo.dev  
+- Learn Expo Tutorial: https://docs.expo.dev/tutorial/introduction  
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 🌍 Community
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- GitHub: https://github.com/expo/expo  
+- Discord: https://chat.expo.dev  
+
+---
+
+© 2026 Food Ordering System. All rights reserved.
