@@ -1,0 +1,161 @@
+# Authentication Error Fixes
+
+## Issues Resolved
+
+### 1. Sign-In Session Conflict ✅
+**Error**: `AppwriteException: Creation of a session is prohibited when a session is active`
+
+**Root Cause**: When users tried to sign in, Appwrite detected an existing session and blocked the new session creation.
+
+**Solution**: Updated [signIn](file:///c:/Dan/JS_Mastery_RN/RN_Fast_Food/lib/appWrite.ts#L74-L90) function to check for and delete existing sessions before creating a new one:
+
+```typescript
+export const signIn = async ({ email, password }: SignInParams) => {
+    try {
+        // Check if there's an existing session and delete it
+        try {
+            const currentSession = await account.getSession('current');
+            if (currentSession) {
+                await account.deleteSession('current');
+            }
+        } catch (error) {
+            // No active session, continue with sign in
+        }
+        
+        const session = await account.createEmailPasswordSession(email, password);
+        return session;
+    } catch (error) {
+        throw new Error (error as string);
+    }
+}
+```
+
+---
+
+### 2. Infinite Loop Error ✅
+**Error**: `Maximum update depth exceeded` with repeated [getCurrentUser](file:///c:/Dan/JS_Mastery_RN/RN_Fast_Food/lib/appWrite.ts#103-128) calls
+
+**Root Cause**: When no session existed (guest user), [getCurrentUser](file:///c:/Dan/JS_Mastery_RN/RN_Fast_Food/lib/appWrite.ts#103-128) threw an error, causing the auth store to repeatedly retry fetching user data, creating an infinite render loop.
+
+**Solution**: Modified [getCurrentUser](file:///c:/Dan/JS_Mastery_RN/RN_Fast_Food/lib/appWrite.ts#L93-L116) to gracefully handle guest users:
+
+```typescript
+export const getCurrentUser = async () => {
+    try {
+        const currentAccount = await account.get();
+        if(!currentAccount) return null;
+        
+        const currentUser = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            [Query.equal('accountId', currentAccount.$id)]
+        );
+        if(!currentUser || currentUser.documents.length === 0) return null;
+        
+        return currentUser.documents[0];
+    } catch (error: any) {
+        // If there's no active session (guest user), return null instead of throwing
+        if (error.code === 401 || error.message?.includes('missing scopes')) {
+            console.log('No active session - user is a guest');
+            return null;
+        }
+        console.log('Error fetching user:', error);
+        return null;
+    }
+}
+```
+
+---
+
+### 3. Auth Store Integration ✅
+
+Updated both sign-in and sign-up flows to properly update the auth store after authentication:
+
+**[sign-in.tsx](file:///c:/Dan/JS_Mastery_RN/RN_Fast_Food/app/(auth)/sign-in.tsx)**:
+```typescript
+await signIn({email, password})
+await fetchAuthenticatedUser(); // Updates auth store
+```
+
+**[sign-up.tsx](file:///c:/Dan/JS_Mastery_RN/RN_Fast_Food/app/(auth)/sign-up.tsx)**:
+```typescript
+await createUser({email, password, name})
+await fetchAuthenticatedUser(); // Updates auth store
+```
+
+---
+
+### 4. Inverted Auth Layout Logic ✅
+**Error**: `Maximum update depth exceeded` with infinite redirect loop
+
+**Root Cause**: The auth layout had inverted logic - it redirected to "/" when the user was NOT authenticated, creating an infinite loop:
+- Guest user → Auth layout redirects to "/" → Tabs layout redirects to "/sign-in" → Auth layout redirects to "/" → ∞
+
+**Solution**: Fixed [_layout.tsx](file:///c:/Dan/JS_Mastery_RN/RN_Fast_Food/app/(auth)/_layout.tsx) to show auth pages for guests and redirect authenticated users:
+
+```typescript
+const AuthLayout = () => {
+  const { isAuthenticated } = useAuthStore();
+
+  // If user is already authenticated, redirect to home (tabs)
+  if (isAuthenticated) return <Redirect href="/" />;
+
+  // Show auth pages (sign-in/sign-up) for guests
+  return (
+    <KeyboardAvoidingView>
+      {/* Auth UI */}
+    </KeyboardAvoidingView>
+  )
+}
+```
+
+---
+
+### 5. Seed File Network Error ✅
+**Error**: `AppwriteException: Network request failed` when running the seed function
+
+**Root Cause**: The `uploadImageToStorage` function was trying to:
+1. Fetch external images from URLs (e.g., vecteezy.com)
+2. Convert them to blobs using web-based APIs
+3. Upload them to Appwrite storage
+
+This approach doesn't work in React Native because:
+- React Native's [fetch](file:///c:/Dan/JS_Mastery_RN/RN_Fast_Food/store/auth.store.ts#26-41) API doesn't support blob conversion the same way browsers do
+- The file upload structure is different in `react-native-appwrite` SDK
+- Cross-origin image fetching has additional restrictions in mobile apps
+
+**Solution**: Simplified [seed.ts](file:///c:/Dan/JS_Mastery_RN/RN_Fast_Food/lib/seed.ts) to use external image URLs directly:
+
+```typescript
+// Before (FAILED):
+const uploadedImage = await uploadImageToStorage(item.image_url);
+const doc = await databases.createDocument(..., {
+    image_url: uploadedImage, // Tried to upload to Appwrite storage
+    ...
+});
+
+// After (WORKS):
+const doc = await databases.createDocument(..., {
+    image_url: item.image_url, // Use external URL directly
+    ...
+});
+```
+
+**Changes Made**:
+- ❌ Removed `uploadImageToStorage` function
+- ❌ Removed `clearStorage` function
+- ✅ Use external image URLs directly in database
+- ✅ Added better logging with emojis for debugging
+- ✅ Added try-catch error handling
+
+---
+
+## Testing Results
+
+✅ Sign-in now works without session conflicts  
+✅ No more infinite loop errors  
+✅ Guest users are handled gracefully  
+✅ Auth state properly updates after sign-in/sign-up  
+✅ App loads without errors when no session exists  
+✅ Proper routing between auth and tabs based on authentication state  
+✅ Seed function works without network errors

@@ -1,5 +1,5 @@
 import { CreateUserPrams, SignInParams } from "@/type";
-import { Account, Avatars, Client, Databases, ID, Query } from "react-native-appwrite";
+import { Account, Avatars, Client, Databases, ID, Query, Storage } from "react-native-appwrite";
 
 const ENDPOINT_ID = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT;
 const PROJECT_ID = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID;
@@ -36,6 +36,7 @@ client
 export const account = new Account(client);
 export const databases = new Databases(client);
 export const avatars = new Avatars(client);
+export const storage = new Storage(client);
 
 export const createUser = async ({email, password, name}: CreateUserPrams) => {
     try {
@@ -85,6 +86,14 @@ export const signIn = async ({ email, password }: SignInParams) => {
         
         const session = await account.createEmailPasswordSession(email, password);
         return session;
+    } catch (error) {
+        throw new Error (error as string);
+    }
+}
+
+export const signOut = async () => {
+    try {
+        await account.deleteSession('current');
     } catch (error) {
         throw new Error (error as string);
     }
