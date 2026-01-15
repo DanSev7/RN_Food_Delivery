@@ -1,4 +1,4 @@
-import { CreateUserPrams, SignInParams } from "@/type";
+import { CreateUserPrams, GetMenuParams, SignInParams } from "@/type";
 import { Account, Avatars, Client, Databases, ID, Query, Storage } from "react-native-appwrite";
 
 const ENDPOINT_ID = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT;
@@ -123,5 +123,46 @@ export const getCurrentUser = async () => {
         }
         console.log('Error fetching user:', error);
         return null;
+    }
+}
+
+export const getMenu = async ({category, query}: GetMenuParams
+) => {
+    try {
+        const queries: string[] = [];
+
+        if(category) {
+            queries.push(Query.equal('categoryies', category));
+        }
+
+        if(query) {
+            queries.push(Query.search('name', query));
+        }
+
+        const menus = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.menuCollectionId,
+            queries,    
+        );
+        if(!menus) throw new Error('Menu not found');
+        
+        return menus.documents;
+    } catch (error) {
+        throw new Error(error as string);
+    }
+}
+
+export const getCategories = async () => {
+    try {
+        
+        const categories = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.categoryCollectionId,
+        );
+        if(!categories) throw new Error('Categories not found');
+        
+        return categories.documents;
+    } catch (error) {
+        throw new Error(error as string);
     }
 }
